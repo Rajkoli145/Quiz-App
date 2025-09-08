@@ -29,8 +29,14 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
       
       <div className="relative bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl p-8 hover:border-gray-300/50 transition-all duration-300 shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <div className={`text-4xl p-3 rounded-xl bg-gradient-to-br ${color} shadow-lg`}>
-            {icon}
+          <div className={`${icon.includes('.png') || icon.includes('.jpg') || icon.includes('.jpeg') || icon.includes('.svg') ? 'p-2' : 'text-4xl p-3 rounded-xl bg-gradient-to-br ' + color + ' shadow-lg'} flex items-center justify-center`}>
+            {icon.startsWith('<svg') ? (
+              <div dangerouslySetInnerHTML={{ __html: icon }} />
+            ) : icon.includes('.png') || icon.includes('.jpg') || icon.includes('.jpeg') || icon.includes('.svg') ? (
+              <img src={icon} alt="Category icon" className="w-12 h-12" />
+            ) : (
+              <span>{icon}</span>
+            )}
           </div>
           <div className={`text-sm px-3 py-1 rounded-full bg-gradient-to-r ${color} text-gray-700 font-medium`}>
             {subtopicCount} topics

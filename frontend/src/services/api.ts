@@ -111,22 +111,22 @@ class ApiService {
     const categoryMetadata: { [key: string]: { color: string; icon: string; description: string } } = {
       'Java': {
         color: 'from-orange-400 to-red-500',
-        icon: '☕',
+        icon: '/icons/java.png',
         description: 'Object-oriented programming language'
       },
       'C': {
         color: 'from-blue-400 to-blue-600',
-        icon: '🔧',
+        icon: '/icons/C.png',
         description: 'System programming language'
       },
       'C++': {
         color: 'from-purple-400 to-purple-600',
-        icon: '⚡',
+        icon: '/icons/c-.png',
         description: 'High-performance programming language'
       },
       'Python': {
         color: 'from-green-400 to-blue-500',
-        icon: '🐍',
+        icon: '/icons/python.png',
         description: 'Versatile and beginner-friendly language'
       }
     };

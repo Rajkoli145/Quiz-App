@@ -151,15 +151,6 @@ const QuizApp: React.FC = () => {
                   Test your programming knowledge with AI-generated questions.
                   Each quiz is unique and personalized just for you.
                 </motion.p>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  className="mt-4 inline-flex items-center space-x-2 text-sm text-gray-500"
-                >
-                  <span>🤖</span>
-                  <span>Powered by Google Gemini AI</span>
-                </motion.div>
               </>
             ) : (
               <>

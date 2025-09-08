@@ -7,7 +7,7 @@ const quizData = {
     name: 'Java',
     key: 'java',
     color: 'from-orange-200 to-red-200',
-    icon: '☕',
+    icon: '/icons/java.png',
     description: 'Object-oriented programming language',
     subtopics: {
       'Basics & Syntax': {
@@ -830,7 +830,12 @@ const quizData = {
           {
             id: 'java-strings-11',
             question: 'What is the difference between StringBuilder and StringBuffer?',
-            options: ['No difference', 'StringBuilder is synchronized', 'StringBuffer is synchronized', 'StringBuffer is faster'],
+            options: [
+              'No difference',
+              'StringBuilder is synchronized',
+              'StringBuffer is synchronized',
+              'StringBuffer is faster'
+            ],
             correctAnswer: 2,
             explanation: 'StringBuffer is synchronized (thread-safe), StringBuilder is not.',
             difficulty: 'medium'
@@ -870,7 +875,12 @@ const quizData = {
           {
             id: 'java-strings-16',
             question: 'What is string immutability?',
-            options: ['Strings can be changed', 'Strings cannot be changed once created', 'Strings are always null', 'Strings are numbers'],
+            options: [
+              'Strings can be changed',
+              'Strings cannot be changed once created',
+              'Strings are always null',
+              'Strings are numbers'
+            ],
             correctAnswer: 1,
             explanation: 'String immutability means strings cannot be modified after creation.',
             difficulty: 'medium'
@@ -1170,7 +1180,7 @@ const quizData = {
     name: 'C',
     key: 'c',
     color: 'from-blue-200 to-indigo-200',
-    icon: '🔷',
+    icon: '/icons/C.png',
     description: 'Procedural programming language',
     subtopics: {
       'Basics & Syntax': {
@@ -1300,11 +1310,11 @@ const quizData = {
       'Bitwise Operators': { name: 'Bitwise Operators', questions: [] }
     }
   },
-  'cpp': {
+  cpp: {
     name: 'C++',
     key: 'cpp',
     color: 'from-purple-200 to-pink-200',
-    icon: '➕',
+    icon: '/icons/c-.png',
     description: 'Object-oriented extension of C',
     subtopics: {
       'Basics & Syntax': {
@@ -1468,7 +1478,7 @@ const quizData = {
     name: 'Python',
     key: 'python',
     color: 'from-green-200 to-teal-200',
-    icon: '🐍',
+    icon: '/icons/python.png',
     description: 'High-level interpreted language',
     subtopics: {
       'Basics & Syntax': {
