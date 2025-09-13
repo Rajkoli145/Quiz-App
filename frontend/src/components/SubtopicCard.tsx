@@ -49,9 +49,7 @@ export const SubtopicCard: React.FC<SubtopicCardProps> = ({
           
           <div className="mt-4 pt-4 border-t border-gray-100">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">
-                🤖 AI Generated
-              </span>
+             
               <motion.div
                 className={`w-8 h-8 rounded-full bg-gradient-to-r ${color} flex items-center justify-center text-white text-sm font-medium`}
                 whileHover={{ scale: 1.1 }}

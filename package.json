@@ -20,6 +20,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "firebase": "^12.2.1",
     "framer-motion": "^12.23.12",
     "helmet": "^8.1.0",
     "lucide-react": "^0.344.0",

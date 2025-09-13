@@ -10,12 +10,21 @@ import { CategoryCard } from './components/CategoryCard';
 import { SubtopicCard } from './components/SubtopicCard';
 import { QuizScreen } from './components/QuizScreen';
 import { ResultScreen } from './components/ResultScreen';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import FirebaseOtpAuth from './components/FirebaseOtpAuth';
+import UserProfile from './components/UserProfile';
+import { User } from 'firebase/auth';
 
 const QuizApp: React.FC = () => {
   const dispatch = useDispatch();
+  const { user, loading: authLoading } = useAuth();
   const { categories, loading, error, getSubtopicQuestions } = useQuizData();
   const [loadingQuiz, setLoadingQuiz] = useState(false);
   const [quizError, setQuizError] = useState<string | null>(null);
+
+  const handleAuthSuccess = (user: User) => {
+    console.log('User authenticated:', user);
+  };
   
   const {
     currentCategory,
@@ -64,12 +73,39 @@ const QuizApp: React.FC = () => {
     setQuizError(null);
   };
 
+  // Show loading screen while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-xl text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show authentication screen if user is not logged in
+  if (!user) {
+    return <FirebaseOtpAuth onAuthSuccess={handleAuthSuccess} />;
+  }
+
   if (showResults) {
-    return <ResultScreen />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+        <UserProfile />
+        <ResultScreen />
+      </div>
+    );
   }
 
   if (isQuizActive) {
-    return <QuizScreen />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+        <UserProfile />
+        <QuizScreen />
+      </div>
+    );
   }
 
   if (loading) {
@@ -116,6 +152,7 @@ const QuizApp: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <UserProfile />
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl" />
@@ -201,7 +238,6 @@ const QuizApp: React.FC = () => {
               <div className="bg-white rounded-lg p-8 text-center max-w-sm mx-4">
                 <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
                 <p className="text-lg text-gray-600 mb-2">Generating Questions...</p>
-                <p className="text-sm text-gray-500">🤖 AI is creating 20 unique questions for you</p>
                 <div className="mt-4 text-xs text-gray-400">
                   This may take 10-15 seconds
                 </div>
@@ -261,7 +297,9 @@ const QuizApp: React.FC = () => {
 function App() {
   return (
     <Provider store={store}>
-      <QuizApp />
+      <AuthProvider>
+        <QuizApp />
+      </AuthProvider>
     </Provider>
   );
 }
