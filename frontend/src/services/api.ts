@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5001/api';
 
 export interface Question {
   id: string;
@@ -37,8 +37,11 @@ export interface QuizSession {
 export interface QuizSubmission {
   sessionId: string;
   answers: { [questionId: string]: number };
+  questions?: Question[]; // Include questions for proper result calculation
   timeSpent: number;
   tabSwitches: number;
+  userId?: string; // User ID for linking results
+  userEmail?: string; // User email for identification
 }
 
 export interface QuizResult {
@@ -224,12 +227,18 @@ class ApiService {
     return this.fetchWithErrorHandling<Category>(`${API_BASE_URL}/categories/${categoryKey}`);
   }
 
-  // Quiz Session API (unchanged)
-  async startQuizSession(categoryKey: string, subtopicKey: string): Promise<QuizSession> {
-    return this.fetchWithErrorHandling<QuizSession>(`${API_BASE_URL}/quiz/start`, {
+  // Quiz Session API (updated to include user information)
+  async startQuizSession(categoryKey: string, subtopicKey: string, userId?: string, userEmail?: string): Promise<QuizSession> {
+    const response = await this.fetchWithErrorHandling<{ success: boolean; data: QuizSession }>(`${API_BASE_URL}/quiz/start`, {
       method: 'POST',
-      body: JSON.stringify({ categoryKey, subtopicKey }),
+      body: JSON.stringify({ 
+        category: categoryKey, 
+        subtopic: subtopicKey,
+        userId,
+        userEmail
+      }),
     });
+    return response.data;
   }
 
   async getQuizSession(sessionId: string): Promise<QuizSession> {

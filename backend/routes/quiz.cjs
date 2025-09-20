@@ -7,7 +7,7 @@ const QuizSession = require('../models/QuizSession.cjs');
 // POST /api/quiz/start - Start a new quiz session
 router.post('/start', async (req, res) => {
   try {
-    const { category, subtopic, duration = 300 } = req.body;
+    const { category, subtopic, duration = 300, userId, userEmail } = req.body;
     
     if (!category || !subtopic) {
       return res.status(400).json({
@@ -16,74 +16,37 @@ router.post('/start', async (req, res) => {
       });
     }
     
-    // Find the category and subtopic
-    const categoryDoc = await Category.findOne({ 
-      key: category.toLowerCase(), 
-      isActive: true 
-    });
-    
-    if (!categoryDoc) {
-      return res.status(404).json({
-        success: false,
-        error: 'Category not found'
-      });
-    }
-    
-    const subtopicData = categoryDoc.subtopics.get(subtopic);
-    if (!subtopicData) {
-      return res.status(404).json({
-        success: false,
-        error: 'Subtopic not found'
-      });
-    }
-    
-    if (subtopicData.questions.length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'No questions available for this subtopic'
-      });
-    }
-    
-    // Create new quiz session
+    // Create new quiz session with minimal data (questions will be loaded separately via Gemini)
     const sessionId = uuidv4();
     const quizSession = new QuizSession({
       sessionId,
-      category: categoryDoc.name,
-      subtopic: subtopicData.name,
-      questions: subtopicData.questions.map(q => ({
-        questionId: q.id,
-        question: q.question,
-        options: q.options,
-        correctAnswer: q.correctAnswer,
-        explanation: q.explanation
-      })),
+      userId: userId || null,
+      userEmail: userEmail || null,
+      category: category,
+      subtopic: subtopic,
+      questions: [], // Questions will be populated when quiz is submitted
       duration,
       timeRemaining: duration,
-      totalQuestions: subtopicData.questions.length,
+      totalQuestions: 20, // Default for Gemini-generated quizzes
       ipAddress: req.ip,
       userAgent: req.get('User-Agent')
     });
     
     await quizSession.save();
     
-    // Return quiz data without correct answers
-    const quizData = {
+    // Return minimal session data
+    const sessionData = {
       sessionId,
-      category: categoryDoc.name,
-      subtopic: subtopicData.name,
-      questions: subtopicData.questions.map(q => ({
-        id: q.id,
-        question: q.question,
-        options: q.options
-      })),
+      category: category,
+      subtopic: subtopic,
       duration,
-      totalQuestions: subtopicData.questions.length,
+      totalQuestions: 20,
       startTime: quizSession.startTime
     };
     
     res.json({
       success: true,
-      data: quizData
+      data: sessionData
     });
   } catch (error) {
     console.error('Error starting quiz:', error);

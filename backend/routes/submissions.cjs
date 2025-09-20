@@ -6,7 +6,7 @@ const QuizResult = require('../models/QuizResult.cjs');
 // POST /api/submissions/submit - Submit quiz and calculate results
 router.post('/submit', async (req, res) => {
   try {
-    const { sessionId, submissionReason = 'manual' } = req.body;
+    const { sessionId, submissionReason = 'manual', answers: submittedAnswers, questions: quizQuestions, userId, userEmail } = req.body;
     
     if (!sessionId) {
       return res.status(400).json({
@@ -15,7 +15,35 @@ router.post('/submit', async (req, res) => {
       });
     }
     
-    const session = await QuizSession.findOne({ sessionId });
+    let session = await QuizSession.findOne({ sessionId });
+    
+    // If session not found and it's a temporary session, create a minimal session record
+    if (!session && sessionId.startsWith('temp-')) {
+      console.log('Creating temporary session record for:', sessionId);
+      
+      // Extract user info from the submission if available
+      const userId = quizQuestions && quizQuestions.length > 0 ? 
+        (quizQuestions[0].category ? null : null) : null; // We'll get this from the request
+      
+      session = new QuizSession({
+        sessionId,
+        userId: userId || null,
+        userEmail: userEmail || null,
+        category: quizQuestions && quizQuestions.length > 0 ? quizQuestions[0].category : 'Unknown',
+        subtopic: quizQuestions && quizQuestions.length > 0 ? quizQuestions[0].subtopic : 'Unknown',
+        questions: [],
+        duration: 300,
+        timeRemaining: 0,
+        totalQuestions: quizQuestions ? quizQuestions.length : 0,
+        startTime: new Date(Date.now() - 300000), // 5 minutes ago
+        isCompleted: false,
+        isSubmitted: false
+      });
+      
+      await session.save();
+      console.log('Temporary session created');
+    }
+    
     if (!session) {
       return res.status(404).json({
         success: false,
@@ -48,24 +76,64 @@ router.post('/submit', async (req, res) => {
     const answers = [];
     const timeTaken = Math.floor((Date.now() - session.startTime) / 1000);
     
-    session.questions.forEach(question => {
-      const userAnswer = session.userAnswers.get(question.questionId);
-      const isCorrect = userAnswer === question.correctAnswer;
-      
-      if (isCorrect) {
-        correctAnswers++;
-      }
-      
-      answers.push({
-        questionId: question.questionId,
-        selectedAnswer: userAnswer !== undefined ? userAnswer : -1,
-        correctAnswer: question.correctAnswer,
-        isCorrect,
-        question: question.question,
-        options: question.options,
-        explanation: question.explanation
+    // Use submitted questions and answers for calculation
+    if (quizQuestions && quizQuestions.length > 0 && submittedAnswers) {
+      // Calculate based on submitted quiz data (Gemini-powered quizzes)
+      quizQuestions.forEach(question => {
+        const userAnswer = submittedAnswers[question.id];
+        const isCorrect = userAnswer === question.correctAnswer;
+        
+        if (isCorrect) {
+          correctAnswers++;
+        }
+        
+        answers.push({
+          questionId: question.id,
+          selectedAnswer: userAnswer !== undefined ? userAnswer : -1,
+          correctAnswer: question.correctAnswer,
+          isCorrect,
+          question: question.question,
+          options: question.options,
+          explanation: question.explanation || 'No explanation provided'
+        });
       });
-    });
+      
+      // Update session with actual questions for future reference
+      session.questions = quizQuestions.map(q => ({
+        questionId: q.id,
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation || 'No explanation provided'
+      }));
+      session.totalQuestions = quizQuestions.length;
+      
+    } else if (session.questions && session.questions.length > 0) {
+      // Fallback to session-stored questions (legacy approach)
+      session.questions.forEach(question => {
+        const userAnswer = session.userAnswers.get(question.questionId);
+        const isCorrect = userAnswer === question.correctAnswer;
+        
+        if (isCorrect) {
+          correctAnswers++;
+        }
+        
+        answers.push({
+          questionId: question.questionId,
+          selectedAnswer: userAnswer !== undefined ? userAnswer : -1,
+          correctAnswer: question.correctAnswer,
+          isCorrect,
+          question: question.question,
+          options: question.options,
+          explanation: question.explanation
+        });
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        error: 'No quiz questions found. Please provide questions data.'
+      });
+    }
     
     const score = Math.round((correctAnswers / session.totalQuestions) * 100);
     
@@ -81,6 +149,8 @@ router.post('/submit', async (req, res) => {
     // Create quiz result record
     const quizResult = new QuizResult({
       sessionId,
+      userId: session.userId || null, // Include user ID from session
+      userEmail: session.userEmail || null, // Include user email from session
       category: session.category,
       subtopic: session.subtopic,
       score,

@@ -6,6 +6,18 @@ const quizResultSchema = new mongoose.Schema({
     required: true,
     ref: 'QuizSession'
   },
+  userId: {
+    type: String,
+    required: false, // Optional to maintain backward compatibility
+    trim: true,
+    index: true // Add index for efficient user queries
+  },
+  userEmail: {
+    type: String,
+    required: false,
+    trim: true,
+    lowercase: true
+  },
   category: {
     type: String,
     required: true,
@@ -87,5 +99,7 @@ quizResultSchema.index({ category: 1, subtopic: 1 });
 quizResultSchema.index({ score: -1 });
 quizResultSchema.index({ createdAt: -1 });
 quizResultSchema.index({ sessionId: 1 });
+quizResultSchema.index({ userId: 1, createdAt: -1 }); // User performance history
+quizResultSchema.index({ userId: 1, category: 1, subtopic: 1 }); // User category performance
 
 module.exports = mongoose.model('QuizResult', quizResultSchema);

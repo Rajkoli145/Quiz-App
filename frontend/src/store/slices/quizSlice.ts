@@ -6,6 +6,9 @@ export interface Question {
   options: string[];
   correctAnswer: number;
   explanation: string;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  category?: string;
+  subtopic?: string;
 }
 
 export interface QuizState {
@@ -20,6 +23,8 @@ export interface QuizState {
   score: number;
   showResults: boolean;
   quizStartTime: number | null;
+  sessionId: string | null;
+  submissionStatus: 'idle' | 'submitting' | 'success' | 'error';
 }
 
 const initialState: QuizState = {
@@ -34,6 +39,8 @@ const initialState: QuizState = {
   score: 0,
   showResults: false,
   quizStartTime: null,
+  sessionId: null,
+  submissionStatus: 'idle',
 };
 
 const quizSlice = createSlice({
@@ -47,7 +54,7 @@ const quizSlice = createSlice({
     setSubtopic: (state, action: PayloadAction<string>) => {
       state.currentSubtopic = action.payload;
     },
-    startQuiz: (state, action: PayloadAction<{ questions: Question[]; duration: number }>) => {
+    startQuiz: (state, action: PayloadAction<{ questions: Question[]; duration: number; sessionId?: string }>) => {
       state.questions = action.payload.questions;
       state.currentQuestionIndex = 0;
       state.selectedAnswers = {};
@@ -56,6 +63,8 @@ const quizSlice = createSlice({
       state.isQuizCompleted = false;
       state.showResults = false;
       state.quizStartTime = Date.now();
+      state.sessionId = action.payload.sessionId || null;
+      state.submissionStatus = 'idle';
     },
     selectAnswer: (state, action: PayloadAction<{ questionId: string; answer: number }>) => {
       state.selectedAnswers[action.payload.questionId] = action.payload.answer;
@@ -90,6 +99,9 @@ const quizSlice = createSlice({
       state.score = Math.round((correctAnswers / state.questions.length) * 100);
       state.showResults = true;
     },
+    setSubmissionStatus: (state, action: PayloadAction<'idle' | 'submitting' | 'success' | 'error'>) => {
+      state.submissionStatus = action.payload;
+    },
     resetQuiz: (state) => {
       return { ...initialState };
     },
@@ -105,6 +117,7 @@ export const {
   previousQuestion,
   decrementTime,
   submitQuiz,
+  setSubmissionStatus,
   resetQuiz,
 } = quizSlice.actions;
 

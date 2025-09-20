@@ -53,12 +53,14 @@ const quizRoutes = require('./routes/quiz.cjs');
 const categoryRoutes = require('./routes/categories.cjs');
 const submissionRoutes = require('./routes/submissions.cjs');
 const questionsRoutes = require('./routes/questions.cjs'); // New Gemini-powered routes
+const userAnalyticsRoutes = require('./routes/userAnalytics.cjs'); // User performance tracking
 
 // Routes
 app.use('/api/quiz', quizRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/questions', questionsRoutes); // New endpoint for dynamic questions
+app.use('/api/user-analytics', userAnalyticsRoutes); // User performance tracking
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

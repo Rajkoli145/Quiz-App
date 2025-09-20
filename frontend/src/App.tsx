@@ -37,7 +37,7 @@ const QuizApp: React.FC = () => {
   };
 
   const handleSubtopicSelect = async (subtopicKey: string) => {
-    if (!currentCategory) return;
+    if (!currentCategory || !user) return;
     
     try {
       setLoadingQuiz(true);
@@ -51,9 +51,31 @@ const QuizApp: React.FC = () => {
         throw new Error('No questions were generated. Please try again.');
       }
       
+      // Start quiz session with user information
+      let sessionId: string | undefined;
+      try {
+        const { apiService } = await import('./services/api');
+        console.log('Starting quiz session for:', currentCategory, subtopicKey, user.uid);
+        const sessionResponse = await apiService.startQuizSession(
+          currentCategory, 
+          subtopicKey, 
+          user.uid, 
+          user.email || user.phoneNumber || undefined
+        );
+        console.log('Session response received:', sessionResponse);
+        sessionId = sessionResponse.sessionId;
+        console.log('Quiz session created successfully:', sessionId);
+      } catch (sessionError) {
+        console.error('Failed to start quiz session with user tracking:', sessionError);
+        // Generate a temporary session ID so results can still be submitted
+        sessionId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        console.log('Using temporary session ID:', sessionId);
+      }
+      
       dispatch(startQuiz({
         questions,
-        duration: 5 * 60 // 5 minutes
+        duration: 5 * 60, // 5 minutes
+        sessionId
       }));
     } catch (err) {
       console.error('Failed to load quiz questions:', err);

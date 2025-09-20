@@ -6,6 +6,18 @@ const quizSessionSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  userId: {
+    type: String,
+    required: false, // Optional to maintain backward compatibility
+    trim: true,
+    index: true
+  },
+  userEmail: {
+    type: String,
+    required: false,
+    trim: true,
+    lowercase: true
+  },
   category: {
     type: String,
     required: true,
