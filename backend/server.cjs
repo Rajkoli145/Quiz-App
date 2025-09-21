@@ -21,28 +21,48 @@ app.use(express.urlencoded({ extended: true }));
 // MongoDB Connection
 const connectDB = async () => {
   try {
-    // Fallback to local MongoDB if Atlas fails
+    // Primary: Try MongoDB Atlas (Cloud) or custom URI
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/quizapp';
-    console.log('Attempting to connect to:', mongoUri.replace(/\/\/.*@/, '//***:***@')); // Hide credentials in log
+    const isAtlas = mongoUri.includes('mongodb+srv://');
     
-    await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB connected successfully');
+    console.log(`Attempting to connect to: ${isAtlas ? 'MongoDB Atlas (Cloud)' : 'Local MongoDB'}`);
+    console.log('URI:', mongoUri.replace(/\/\/.*@/, '//***:***@')); // Hide credentials in log
+    
+    const connectionOptions = {
+      // Atlas-specific optimizations
+      ...(isAtlas && {
+        maxPoolSize: 10, // Maintain up to 10 socket connections
+        serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+        socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+        bufferCommands: false, // Disable mongoose buffering
+      })
+    };
+    
+    await mongoose.connect(mongoUri, connectionOptions);
+    console.log(`✅ MongoDB connected successfully ${isAtlas ? '(Cloud Atlas)' : '(Local)'}`);
+    
+    // Log database name
+    const dbName = mongoose.connection.db.databaseName;
+    console.log(`📊 Database: ${dbName}`);
+    
   } catch (error) {
-    console.error('MongoDB connection error:', error);
-    console.log('Falling back to local MongoDB...');
+    console.error('❌ MongoDB connection error:', error.message);
     
-    try {
-      await mongoose.connect('mongodb://localhost:27017/quizapp', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-      console.log('Connected to local MongoDB successfully');
-    } catch (localError) {
-      console.error('Local MongoDB connection failed:', localError);
-      console.log('Please check your .env file or start local MongoDB');
+    // Only fallback to local if we were trying Atlas
+    if (process.env.MONGODB_URI && process.env.MONGODB_URI.includes('mongodb+srv://')) {
+      console.log('🔄 Falling back to local MongoDB...');
+      
+      try {
+        await mongoose.connect('mongodb://localhost:27017/quizapp');
+        console.log('✅ Connected to local MongoDB successfully (fallback)');
+      } catch (localError) {
+        console.error('❌ Local MongoDB connection failed:', localError.message);
+        console.log('💡 Please check your .env file or start local MongoDB');
+        console.log('💡 For Atlas: Verify your connection string, username, password, and IP whitelist');
+        process.exit(1);
+      }
+    } else {
+      console.log('💡 Please check your MongoDB connection or .env configuration');
       process.exit(1);
     }
   }

@@ -12,7 +12,10 @@
     "server:dev": "nodemon backend/server.cjs",
     "seed": "node backend/seeders/quizSeeder.cjs",
     "start": "concurrently \"npm run server\" \"npm run dev\"",
-    "test:gemini": "node backend/test/testGemini.cjs"
+    "test:gemini": "node backend/test/testGemini.cjs",
+    "setup:atlas": "node scripts/setupAtlas.cjs",
+    "migrate:atlas": "node scripts/migrateToAtlas.cjs",
+    "view:atlas": "node scripts/viewAtlasData.cjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.17.1",
