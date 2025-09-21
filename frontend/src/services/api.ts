@@ -1,4 +1,11 @@
-const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5001/api';
+const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Debug logging
+console.log('API Configuration:', {
+  VITE_API_URL: (import.meta as any).env.VITE_API_URL,
+  API_BASE_URL,
+  allEnvVars: (import.meta as any).env
+});
 
 export interface Question {
   id: string;
@@ -72,6 +79,7 @@ export interface QuizResult {
 class ApiService {
   private async fetchWithErrorHandling<T>(url: string, options?: RequestInit): Promise<T> {
     try {
+      console.log('Making API request to:', url);
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
