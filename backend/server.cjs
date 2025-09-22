@@ -71,7 +71,6 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       bufferCommands: false, // Disable mongoose buffering for serverless
-      bufferMaxEntries: 0, // Disable mongoose buffering for serverless
     };
     
     await mongoose.connect(mongoUri, connectionOptions);
