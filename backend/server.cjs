@@ -20,7 +20,8 @@ const allowedOrigins = [
   'http://127.0.0.1:5175', 
   'http://localhost:3000',
   // Production origins (replace with your actual Vercel domain)
-  process.env.FRONTEND_URL || 'https://quiz-app-cyan-two-23.vercel.app'
+  process.env.FRONTEND_URL || 'https://quiz-app-cyan-two-23.vercel.app',
+  'https://quiz-app-cyan-two-23.vercel.app'
 ];
 
 app.use(cors({
