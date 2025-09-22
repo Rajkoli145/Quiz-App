@@ -9,8 +9,31 @@ const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(helmet());
+// CORS configuration for both development and production
+const allowedOrigins = [
+  // Development origins
+  'http://localhost:5173', 
+  'http://localhost:5174', 
+  'http://localhost:5175', 
+  'http://127.0.0.1:5173', 
+  'http://127.0.0.1:5174', 
+  'http://127.0.0.1:5175', 
+  'http://localhost:3000',
+  // Production origins (replace with your actual Vercel domain)
+  process.env.FRONTEND_URL || 'https://quiz-app-cyan-two-23.vercel.app'
+];
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://127.0.0.1:5175', 'http://localhost:3000'],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
