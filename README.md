@@ -1,6 +1,11 @@
-# Quiz App with Firebase Authentication & Gemini AI Integration
+# QuizMaster - AI-Powered Programming Quiz Platform
 
-A modern, full-stack quiz application with Firebase authentication that generates MCQ questions dynamically using Google's Gemini AI. Features user authentication, progress tracking, and personalized quiz experiences with dark/light mode support.
+A modern, full-stack quiz application with Firebase authentication that generates MCQ questions dynamically using Google's Gemini AI. Features user authentication, progress tracking, and personalized quiz experiences with glassmorphism UI design.
+
+## 🌐 Live Demo
+**🚀 [Try QuizMaster Live](https://quiz-app-cyan-two-23.vercel.app)**
+
+Test the app with any phone number for OTP authentication!
 
 ## 🚀 Features
 
@@ -8,10 +13,11 @@ A modern, full-stack quiz application with Firebase authentication that generate
 - **🤖 AI-Powered Questions**: 10-20 questions per subtopic generated via Gemini AI
 - **🎲 Random Quiz Experience**: Each user gets 20 random questions from the pool
 - **💾 Progress Tracking**: User results saved to MongoDB with session management
-- **🎨 Modern UI**: React + TypeScript frontend with Tailwind CSS
+- **🎨 Glassmorphism UI**: Modern glassmorphism design with backdrop blur effects
 - **🌙 Dark/Light Mode**: Toggle between themes with persistence
 - **📱 Responsive Design**: Works on desktop, tablet, and mobile
-- **☁️ Cloud Ready**: MongoDB Atlas integration for global deployment
+- **☁️ Cloud Deployed**: Full-stack deployment on Vercel with MongoDB Atlas
+- **📊 Analytics Dashboard**: Beautiful performance tracking with glassmorphism design
 - **4 Programming Languages**: Java, C, C++, Python with 20+ subtopics each
 
 ## ⚡ Quick Start (5 Minutes)
@@ -373,13 +379,49 @@ Check browser console for Firebase config loading:
 - Error handling prevents information leakage
 - CORS configured for frontend domain
 
+## 🚀 Deployment
+
+This app is deployed on **Vercel** with the following architecture:
+
+### Production Stack
+- **Frontend**: Vercel (Static Build)
+- **Backend**: Vercel Serverless Functions
+- **Database**: MongoDB Atlas (Cloud)
+- **Authentication**: Firebase
+- **AI**: Google Gemini API
+
+### Deployment URL
+- **Live App**: https://quiz-app-cyan-two-23.vercel.app
+- **API Health**: https://quiz-app-cyan-two-23.vercel.app/api/health
+
+### Deploy Your Own
+1. **Fork this repository**
+2. **Connect to Vercel**: Import your GitHub repo to Vercel
+3. **Environment Variables**: Add all required env vars in Vercel dashboard
+4. **Deploy**: Vercel will automatically build and deploy
+
+### Environment Variables for Vercel
+```env
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+# ... other Firebase vars
+
+# Backend Configuration
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/quizapp
+GEMINI_API_KEY=your_gemini_api_key
+NODE_ENV=production
+VITE_API_URL=https://your-app.vercel.app/api
+```
+
 ## 📈 Scaling
 
 For production deployment:
-1. Use Redis for distributed caching
-2. Implement database storage for questions
-3. Add rate limiting for API endpoints
-4. Set up monitoring and logging
+1. ✅ **Serverless Architecture**: Already implemented with Vercel
+2. ✅ **Cloud Database**: MongoDB Atlas for global access
+3. ✅ **CDN**: Vercel's global CDN for fast loading
+4. 🔄 **Monitoring**: Add application monitoring (recommended)
 
 ## 🤝 Contributing
 
