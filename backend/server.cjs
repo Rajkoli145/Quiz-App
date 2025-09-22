@@ -42,8 +42,15 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// MongoDB Connection
+// MongoDB Connection for Serverless Environment
+let isConnected = false;
+
 const connectDB = async () => {
+  if (isConnected) {
+    console.log('Using existing MongoDB connection');
+    return;
+  }
+
   try {
     // Primary: Try MongoDB Atlas (Cloud) or custom URI
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/quizapp';
@@ -53,16 +60,16 @@ const connectDB = async () => {
     console.log('URI:', mongoUri.replace(/\/\/.*@/, '//***:***@')); // Hide credentials in log
     
     const connectionOptions = {
-      // Atlas-specific optimizations
-      ...(isAtlas && {
-        maxPoolSize: 10, // Maintain up to 10 socket connections
-        serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-        socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-        bufferCommands: false, // Disable mongoose buffering
-      })
+      // Serverless-optimized settings
+      maxPoolSize: 1, // Limit connection pool for serverless
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      bufferCommands: false, // Disable mongoose buffering for serverless
+      bufferMaxEntries: 0, // Disable mongoose buffering for serverless
     };
     
     await mongoose.connect(mongoUri, connectionOptions);
+    isConnected = true;
     console.log(`✅ MongoDB connected successfully ${isAtlas ? '(Cloud Atlas)' : '(Local)'}`);
     
     // Log database name
@@ -71,24 +78,22 @@ const connectDB = async () => {
     
   } catch (error) {
     console.error('❌ MongoDB connection error:', error.message);
-    
-    // Only fallback to local if we were trying Atlas
-    if (process.env.MONGODB_URI && process.env.MONGODB_URI.includes('mongodb+srv://')) {
-      console.log('🔄 Falling back to local MongoDB...');
-      
-      try {
-        await mongoose.connect('mongodb://localhost:27017/quizapp');
-        console.log('✅ Connected to local MongoDB successfully (fallback)');
-      } catch (localError) {
-        console.error('❌ Local MongoDB connection failed:', localError.message);
-        console.log('💡 Please check your .env file or start local MongoDB');
-        console.log('💡 For Atlas: Verify your connection string, username, password, and IP whitelist');
-        process.exit(1);
-      }
-    } else {
-      console.log('💡 Please check your MongoDB connection or .env configuration');
-      process.exit(1);
-    }
+    throw error; // Re-throw for serverless error handling
+  }
+};
+
+// Middleware to ensure DB connection for each request
+const ensureDBConnection = async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Database connection failed',
+      message: error.message 
+    });
   }
 };
 
@@ -99,12 +104,12 @@ const submissionRoutes = require('./routes/submissions.cjs');
 const questionsRoutes = require('./routes/questions.cjs'); // New Gemini-powered routes
 const userAnalyticsRoutes = require('./routes/userAnalytics.cjs'); // User performance tracking
 
-// Routes
-app.use('/api/quiz', quizRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/submissions', submissionRoutes);
-app.use('/api/questions', questionsRoutes); // New endpoint for dynamic questions
-app.use('/api/user-analytics', userAnalyticsRoutes); // User performance tracking
+// Routes with DB connection middleware
+app.use('/api/quiz', ensureDBConnection, quizRoutes);
+app.use('/api/categories', ensureDBConnection, categoryRoutes);
+app.use('/api/submissions', ensureDBConnection, submissionRoutes);
+app.use('/api/questions', ensureDBConnection, questionsRoutes); // New endpoint for dynamic questions
+app.use('/api/user-analytics', ensureDBConnection, userAnalyticsRoutes); // User performance tracking
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -133,19 +138,24 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Start server
+// Start server (for local development)
 const startServer = async () => {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`Health check: http://localhost:${PORT}/api/health`);
-    console.log(`Gemini API integration: ${process.env.GEMINI_API_KEY ? 'Enabled' : 'Disabled'}`);
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+      console.log(`Health check: http://localhost:${PORT}/api/health`);
+      console.log(`Gemini API integration: ${process.env.GEMINI_API_KEY ? 'Enabled' : 'Disabled'}`);
+    });
+  }
 };
 
-startServer().catch(error => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});
+// Only start server if not in production (Vercel handles this)
+if (process.env.NODE_ENV !== 'production') {
+  startServer().catch(error => {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  });
+}
 
 module.exports = app;
