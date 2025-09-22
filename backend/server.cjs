@@ -46,12 +46,18 @@ app.use(express.urlencoded({ extended: true }));
 let isConnected = false;
 
 const connectDB = async () => {
-  if (isConnected) {
+  // Check if already connected and connection is ready
+  if (isConnected && mongoose.connection.readyState === 1) {
     console.log('Using existing MongoDB connection');
     return;
   }
 
   try {
+    // Disconnect if in a bad state
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+
     // Primary: Try MongoDB Atlas (Cloud) or custom URI
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/quizapp';
     const isAtlas = mongoUri.includes('mongodb+srv://');
@@ -69,6 +75,18 @@ const connectDB = async () => {
     };
     
     await mongoose.connect(mongoUri, connectionOptions);
+    
+    // Wait for connection to be fully ready
+    await new Promise((resolve, reject) => {
+      if (mongoose.connection.readyState === 1) {
+        resolve();
+      } else {
+        mongoose.connection.once('connected', resolve);
+        mongoose.connection.once('error', reject);
+        setTimeout(() => reject(new Error('Connection timeout')), 10000);
+      }
+    });
+    
     isConnected = true;
     console.log(`✅ MongoDB connected successfully ${isAtlas ? '(Cloud Atlas)' : '(Local)'}`);
     
@@ -78,6 +96,7 @@ const connectDB = async () => {
     
   } catch (error) {
     console.error('❌ MongoDB connection error:', error.message);
+    isConnected = false;
     throw error; // Re-throw for serverless error handling
   }
 };
