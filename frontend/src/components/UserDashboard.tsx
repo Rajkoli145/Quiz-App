@@ -170,11 +170,11 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, onClose }) => {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center z-50">
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl">
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center z-50">
+        <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/50 mx-auto mb-4"></div>
-            <p className="text-white/80">Loading your dashboard...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading your dashboard...</p>
           </div>
         </div>
       </div>
@@ -183,22 +183,22 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, onClose }) => {
 
   if (error) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center z-50">
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl">
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center z-50">
+        <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl">
           <div className="text-center">
-            <div className="text-red-400 text-4xl mb-4">⚠️</div>
-            <h3 className="text-xl font-semibold text-white mb-2">Error Loading Dashboard</h3>
-            <p className="text-white/70 mb-6">{error}</p>
+            <div className="text-red-500 text-4xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">Error Loading Dashboard</h3>
+            <p className="text-gray-600 mb-6">{error}</p>
             <div className="flex space-x-3 justify-center">
               <button
                 onClick={fetchUserData}
-                className="bg-blue-500/30 hover:bg-blue-500/50 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-xl transition-all duration-300"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition-all duration-300"
               >
                 Try Again
               </button>
               <button
                 onClick={onClose}
-                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-xl transition-all duration-300"
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-xl transition-all duration-300"
               >
                 Close
               </button>
@@ -210,20 +210,26 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center z-50 p-4">
-      <div className="bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 rounded-3xl w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center z-50 p-4">
+      {/* Background Effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-3xl w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600/80 via-blue-600/80 to-indigo-600/80 backdrop-blur-sm text-white p-6 border-b border-white/10">
+        <div className="bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 text-white p-6 border-b border-gray-200/30">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+              <h2 className="text-3xl font-bold text-white">
                 Performance Dashboard
               </h2>
-              <p className="text-blue-100/80 mt-1">{user.email || user.phoneNumber}</p>
+              <p className="text-white/90 mt-1">{user.email || user.phoneNumber}</p>
             </div>
             <button
               onClick={onClose}
-              className="text-white/80 hover:text-white text-2xl font-bold w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/20 transition-all duration-300 backdrop-blur-sm"
+              className="text-white/80 hover:text-white text-2xl font-bold w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/20 transition-all duration-300"
             >
               ×
             </button>
@@ -231,7 +237,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, onClose }) => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-b border-white/10 bg-white/5 backdrop-blur-sm">
+        <div className="border-b border-gray-200/30 bg-white/50 backdrop-blur-sm">
           <div className="flex space-x-2 px-6 py-2">
             {[
               { id: 'overview', label: 'Overview', icon: '📊' },
@@ -243,8 +249,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, onClose }) => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-3 px-6 rounded-xl font-medium text-sm transition-all duration-300 ${
                   activeTab === tab.id
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/30'
-                    : 'text-white/70 hover:text-white hover:bg-white/10 backdrop-blur-sm'
+                    ? 'bg-white/70 text-gray-800 shadow-lg backdrop-blur-sm border border-gray-200/50'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-white/50 backdrop-blur-sm'
                 }`}
               >
                 <span className="mr-2">{tab.icon}</span>
@@ -255,40 +261,40 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)] bg-gradient-to-b from-transparent to-white/5">
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)] bg-white/30 backdrop-blur-sm">
           {activeTab === 'overview' && userStats && (
             <div className="space-y-6">
               {/* Quick Stats */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/30 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:scale-105 transition-transform duration-300">
-                  <div className="text-3xl font-bold text-white">{userStats.totalQuizzes}</div>
-                  <div className="text-sm text-blue-100/80 mt-1">Total Quizzes</div>
+                <div className="bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl p-6 hover:scale-105 transition-transform duration-300 shadow-lg">
+                  <div className="text-3xl font-bold text-blue-600">{userStats.totalQuizzes}</div>
+                  <div className="text-sm text-gray-600 mt-1">Total Quizzes</div>
                 </div>
-                <div className="bg-gradient-to-br from-green-500/20 to-green-600/30 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:scale-105 transition-transform duration-300">
-                  <div className="text-3xl font-bold text-white">
+                <div className="bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl p-6 hover:scale-105 transition-transform duration-300 shadow-lg">
+                  <div className="text-3xl font-bold text-green-600">
                     {userStats.averageScore}%
                   </div>
-                  <div className="text-sm text-green-100/80 mt-1">Average Score</div>
+                  <div className="text-sm text-gray-600 mt-1">Average Score</div>
                 </div>
-                <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/30 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:scale-105 transition-transform duration-300">
-                  <div className="text-3xl font-bold text-white">{userStats.highestScore}%</div>
-                  <div className="text-sm text-purple-100/80 mt-1">Best Score</div>
+                <div className="bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl p-6 hover:scale-105 transition-transform duration-300 shadow-lg">
+                  <div className="text-3xl font-bold text-purple-600">{userStats.highestScore}%</div>
+                  <div className="text-sm text-gray-600 mt-1">Best Score</div>
                 </div>
-                <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/30 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:scale-105 transition-transform duration-300">
-                  <div className="text-3xl font-bold text-white">
+                <div className="bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl p-6 hover:scale-105 transition-transform duration-300 shadow-lg">
+                  <div className="text-3xl font-bold text-orange-600">
                     {formatTime(userStats.totalTimeSpent)}
                   </div>
-                  <div className="text-sm text-orange-100/80 mt-1">Time Spent</div>
+                  <div className="text-sm text-gray-600 mt-1">Time Spent</div>
                 </div>
               </div>
 
               {/* Grade Distribution */}
               {Object.keys(userStats.gradeDistribution).length > 0 && (
-                <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">Grade Distribution</h3>
+                <div className="bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl p-6 shadow-lg">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">Grade Distribution</h3>
                   <div className="flex flex-wrap gap-3">
                     {Object.entries(userStats.gradeDistribution).map(([grade, count]) => (
-                      <div key={grade} className="bg-white/20 backdrop-blur-sm border border-white/30 px-4 py-2 rounded-xl text-sm font-medium text-white">
+                      <div key={grade} className="bg-gradient-to-r from-blue-100 to-purple-100 border border-gray-200/50 px-4 py-2 rounded-xl text-sm font-medium text-gray-700">
                         {grade}: {count}
                       </div>
                     ))}
@@ -298,15 +304,15 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, onClose }) => {
 
               {/* Improvement Trend */}
               {userStats.improvementTrend.length > 0 && (
-                <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">Improvement Trend</h3>
+                <div className="bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl p-6 shadow-lg">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">Improvement Trend</h3>
                   <div className="flex space-x-4">
                     {userStats.improvementTrend.map((trend, index) => (
-                      <div key={index} className="flex-1 text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                        <div className="text-3xl font-bold text-white">
+                      <div key={index} className="flex-1 text-center bg-gradient-to-br from-blue-50 to-purple-50 backdrop-blur-sm rounded-xl p-4 border border-gray-200/50">
+                        <div className="text-3xl font-bold text-gray-800">
                           {trend.averageScore}%
                         </div>
-                        <div className="text-sm text-white/70 mt-1">{trend.period}</div>
+                        <div className="text-sm text-gray-600 mt-1">{trend.period}</div>
                       </div>
                     ))}
                   </div>
@@ -315,24 +321,24 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, onClose }) => {
 
               {/* Recent Activity */}
               {userStats.recentActivity.length > 0 && (
-                <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
-                  <h3 className="text-xl font-semibold text-white mb-4">Recent Activity</h3>
+                <div className="bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl p-6 shadow-lg">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">Recent Activity</h3>
                   <div className="space-y-3">
                     {userStats.recentActivity.slice(0, 5).map((activity, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300">
+                      <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50/50 to-purple-50/50 backdrop-blur-sm border border-gray-200/50 rounded-xl hover:from-blue-50 hover:to-purple-50 transition-all duration-300">
                         <div>
-                          <div className="font-medium text-white">
+                          <div className="font-medium text-gray-800">
                             {activity.category} - {activity.subtopic}
                           </div>
-                          <div className="text-sm text-white/70 mt-1">
+                          <div className="text-sm text-gray-600 mt-1">
                             {new Date(activity.completedAt).toLocaleDateString()}
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="font-bold text-white text-lg">
+                          <div className="font-bold text-gray-800 text-lg">
                             {activity.score}%
                           </div>
-                          <div className="text-xs px-3 py-1 rounded-full bg-white/20 text-white border border-white/30 mt-1">
+                          <div className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-gray-700 border border-gray-200/50 mt-1">
                             {activity.grade}
                           </div>
                         </div>
@@ -346,33 +352,33 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, onClose }) => {
 
           {activeTab === 'history' && quizHistory && (
             <div className="space-y-6">
-              <h3 className="text-2xl font-semibold text-white">Quiz History</h3>
+              <h3 className="text-2xl font-semibold text-gray-800">Quiz History</h3>
               {quizHistory.results.length === 0 ? (
-                <div className="text-center py-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl">
+                <div className="text-center py-12 bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl shadow-lg">
                   <div className="text-6xl mb-4">📚</div>
-                  <p className="text-white/70 text-lg">No quiz history found. Start taking quizzes to see your progress!</p>
+                  <p className="text-gray-600 text-lg">No quiz history found. Start taking quizzes to see your progress!</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {quizHistory.results.map((result) => (
-                    <div key={result.sessionId} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300">
+                    <div key={result.sessionId} className="bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 shadow-lg">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
-                          <h4 className="font-semibold text-white text-lg">
+                          <h4 className="font-semibold text-gray-800 text-lg">
                             {result.category} - {result.subtopic}
                           </h4>
-                          <div className="text-sm text-white/70 mt-2">
+                          <div className="text-sm text-gray-600 mt-2">
                             {result.correctAnswers}/{result.totalQuestions} correct • {formatTime(result.timeTaken)}
                           </div>
-                          <div className="text-xs text-white/50 mt-1">
+                          <div className="text-xs text-gray-500 mt-1">
                             {new Date(result.createdAt).toLocaleString()}
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-white">
+                          <div className="text-2xl font-bold text-gray-800">
                             {result.score}%
                           </div>
-                          <div className="text-xs px-3 py-1 rounded-full bg-white/20 text-white border border-white/30 mt-2">
+                          <div className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-gray-700 border border-gray-200/50 mt-2">
                             {result.grade}
                           </div>
                         </div>
@@ -386,31 +392,31 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, onClose }) => {
 
           {activeTab === 'categories' && userStats && (
             <div className="space-y-6">
-              <h3 className="text-2xl font-semibold text-white">Category Performance</h3>
+              <h3 className="text-2xl font-semibold text-gray-800">Category Performance</h3>
               {Object.keys(userStats.categoryPerformance).length === 0 ? (
-                <div className="text-center py-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl">
+                <div className="text-center py-12 bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl shadow-lg">
                   <div className="text-6xl mb-4">🎯</div>
-                  <p className="text-white/70 text-lg">No category data available yet. Take some quizzes to see your performance by category!</p>
+                  <p className="text-gray-600 text-lg">No category data available yet. Take some quizzes to see your performance by category!</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {Object.entries(userStats.categoryPerformance).map(([category, performance]) => (
-                    <div key={category} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300">
-                      <h4 className="font-semibold text-white text-xl mb-4">{category}</h4>
+                    <div key={category} className="bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 shadow-lg">
+                      <h4 className="font-semibold text-gray-800 text-xl mb-4">{category}</h4>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-white/70">Quizzes Taken:</span>
-                          <span className="font-medium text-white text-lg">{performance.totalQuizzes}</span>
+                          <span className="text-sm text-gray-600">Quizzes Taken:</span>
+                          <span className="font-medium text-gray-800 text-lg">{performance.totalQuizzes}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-white/70">Average Score:</span>
-                          <span className="font-medium text-white text-lg">
+                          <span className="text-sm text-gray-600">Average Score:</span>
+                          <span className="font-medium text-gray-800 text-lg">
                             {performance.averageScore}%
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-white/70">Best Score:</span>
-                          <span className="font-medium text-white text-lg">
+                          <span className="text-sm text-gray-600">Best Score:</span>
+                          <span className="font-medium text-gray-800 text-lg">
                             {performance.bestScore}%
                           </span>
                         </div>
